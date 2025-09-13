@@ -1,0 +1,32 @@
+{
+    "manifest_version": 3,
+    "name": "OpenTiny NEXT",
+    "version": "1.0.0",
+    "description": "OpenTiny NEXT 智能助手",
+    "icons": {
+      "16": "ai.png",
+      "48": "ai.png",
+      "128": "ai.png"
+    },
+    "action":{},
+    "options_ui": {
+        "page": "./src/options.html",
+        "open_in_tab": true
+      },
+    "content_scripts": [
+        {
+          "matches": ["https://*/*"],
+          "js": ["src/vendor/next-sdk.js", "src/main.js"]
+        }
+      ],
+      "background":{
+        "service_worker": "src/service_worker.js"
+      },
+    "permissions": [
+      "storage",
+      "tabs",
+      "activeTab",
+      "downloads",
+      "contextMenus"
+    ]
+  }
