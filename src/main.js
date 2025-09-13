@@ -34,6 +34,26 @@ async function connect() {
     }
   );
 
+  server.registerTool(
+    "add-tar",
+    {
+      title: "新增出差申请",
+      description: "新增出差申请,要求：传入的name参数格式为字符串,比如 张三",
+      inputSchema: { name: z.string() },
+    },
+    async ({ name }) => {
+      const res = await fetch("https://www.baidu.com/", {
+        method: "GET",
+      }).then((res) => res.text());
+
+      return {
+        content: [
+          { type: "text", text: `${name}的出差计划是：${res.slice(0, 5)}` },
+        ],
+      };
+    }
+  );
+
   // Create an MCP Client
   const client = new WebMcpClient({
     name: "demo-client",
@@ -44,15 +64,20 @@ async function connect() {
   await server.connect(serverTransport);
   await client.connect(clientTransport);
 
+  const sessionId = localStorage.getItem("sessionId");
+
   // Connect to the Web Agent server
-  const { transport, sessionId } = await client.connect({
+  const { transport, sessionId: sessionId2 } = await client.connect({
     url: "https://agent.opentiny.design/api/v1/webmcp-trial/mcp",
+    sessionId,
     agent: true,
   });
 
-  console.log(sessionId), 1111;
+  localStorage.setItem("sessionId", sessionId2);
 
-  //   document.getElementById("sessionId").innerHTML = sessionId;
+  console.log(window, document);
+
+  console.log(sessionId2);
 
   createRemoter({
     sessionId,

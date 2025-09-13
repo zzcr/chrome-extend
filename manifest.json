@@ -4,9 +4,9 @@
     "version": "1.0.0",
     "description": "OpenTiny NEXT 智能助手",
     "icons": {
-      "16": "ai.png",
-      "48": "ai.png",
-      "128": "ai.png"
+      "16": "logo.png",
+      "48": "logo.png",
+      "128": "logo.png"
     },
     "action":{},
     "options_ui": {
