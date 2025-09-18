@@ -54,6 +54,24 @@ async function connect() {
     }
   );
 
+  const zzc = document.querySelector("#zzc");
+  const data = zzc.dataset;
+  console.log(data, 111);
+
+  window.addEventListener(
+    "message",
+    function (event) {
+      // 非常重要！验证消息来源，避免处理来自其他脚本的恶意消息
+      // if (event.source != window) return;
+
+      // 只处理我们定义好的消息类型
+      if (event.data.type && event.data.type == "FROM_PAGE") {
+        console.log("从网页收到：", event.data.payload);
+      }
+    },
+    false
+  );
+
   // Create an MCP Client
   const client = new WebMcpClient({
     name: "demo-client",
@@ -74,8 +92,6 @@ async function connect() {
   });
 
   localStorage.setItem("sessionId", sessionId2);
-
-  console.log(window, document);
 
   console.log(sessionId2);
 
