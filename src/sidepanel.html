@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OpenTiny NEXT 侧边栏</title>
+    <link rel="stylesheet" href="sidepanel.css" />
+  </head>
+  <body>
+    <div class="sidebar-container">
+      <!-- 头部区域 -->
+      <div class="sidebar-header">
+        <div class="header-content">
+          <img src="../logo.png" alt="OpenTiny NEXT" class="sidebar-logo" />
+          <h1>智能助手</h1>
+        </div>
+        <div class="header-actions">
+          <button class="action-btn" id="refreshBtn" title="刷新">🔄</button>
+          <button class="action-btn" id="settingsBtn" title="设置">⚙️</button>
+        </div>
+      </div>
+
+      <!-- 功能区域 -->
+      <div class="sidebar-content">
+        <!-- 快速工具 -->
+        <div class="tool-section">
+          <h3>快速工具</h3>
+          <div class="tool-grid">
+            <button class="tool-btn" id="changeBgTool">
+              <span class="tool-icon">🎨</span>
+              <span class="tool-text">改变背景</span>
+            </button>
+            <button class="tool-btn" id="exportTool">
+              <span class="tool-icon">📊</span>
+              <span class="tool-text">导出数据</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 页面信息 -->
+        <div class="info-section">
+          <h3>页面信息</h3>
+          <div class="info-card">
+            <div class="info-item">
+              <span class="info-label">标题:</span>
+              <span class="info-value" id="pageTitle">加载中...</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">网址:</span>
+              <span class="info-value" id="pageUrl">加载中...</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">状态:</span>
+              <span class="info-value" id="pageStatus">加载中...</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 自定义功能 -->
+        <div class="custom-section">
+          <h3>自定义功能</h3>
+          <div class="custom-list" id="customList">
+            <!-- 动态生成的自定义功能将在这里显示 -->
+          </div>
+          <button class="add-custom-btn" id="addCustomBtn">
+            <span>+</span>
+            <span>添加自定义功能</span>
+          </button>
+        </div>
+
+        <!-- 历史记录 -->
+        <div class="history-section">
+          <h3>操作历史</h3>
+          <div class="history-list" id="historyList">
+            <!-- 操作历史将在这里显示 -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 底部区域 -->
+      <div class="sidebar-footer">
+        <div class="footer-info">
+          <span>OpenTiny NEXT v1.0.0</span>
+        </div>
+        <div class="footer-actions">
+          <button class="footer-btn" id="helpBtn">帮助</button>
+          <button class="footer-btn" id="feedbackBtn">反馈</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 添加自定义功能模态框 -->
+    <div class="modal" id="addCustomModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>添加自定义功能</h3>
+          <button class="close-btn" id="closeCustomModal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="customTitle">功能名称:</label>
+            <input type="text" id="customTitle" placeholder="请输入功能名称" />
+          </div>
+          <div class="form-group">
+            <label for="customType">功能类型:</label>
+            <select id="customType">
+              <option value="script">执行脚本</option>
+              <option value="style">修改样式</option>
+              <option value="data">数据处理</option>
+              <option value="action">页面操作</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="customCode">功能代码:</label>
+            <textarea
+              id="customCode"
+              placeholder="请输入功能代码..."
+              rows="6"
+            ></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn secondary" id="cancelCustomBtn">取消</button>
+          <button class="btn primary" id="saveCustomBtn">保存</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="sidepanel.js"></script>
+  </body>
+</html>

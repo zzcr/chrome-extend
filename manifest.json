@@ -8,7 +8,10 @@
     "48": "logo.png",
     "128": "logo.png"
   },
-  "action": {},
+  "action": {
+    "default_popup": "src/popup.html",
+    "default_title": "OpenTiny NEXT 智能助手"
+  },
   "options_ui": {
     "page": "./src/options.html",
     "open_in_tab": true
@@ -22,5 +25,15 @@
   "background": {
     "service_worker": "src/service_worker.js"
   },
-  "permissions": ["storage", "tabs", "activeTab", "downloads", "contextMenus"]
+  "side_panel": {
+    "default_path": "src/sidepanel.html"
+  },
+  "permissions": [
+    "storage",
+    "tabs",
+    "activeTab",
+    "downloads",
+    "contextMenus",
+    "sidePanel"
+  ]
 }
