@@ -54,10 +54,6 @@ async function connect() {
     }
   );
 
-  const zzc = document.querySelector("#zzc");
-  const data = zzc.dataset;
-  console.log(data, 111);
-
   window.addEventListener(
     "message",
     function (event) {
