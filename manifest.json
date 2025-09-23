@@ -28,6 +28,9 @@
   "side_panel": {
     "default_path": "src/sidepanel.html"
   },
+  // "content_security_policy": {
+  //   "extension_pages": "script-src 'unpkg.com'; object-src 'self'"
+  // },
   "permissions": [
     "storage",
     "tabs",
