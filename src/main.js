@@ -228,12 +228,23 @@ async function connect() {
     ],
   });
 
+  const cookie = document.cookie;
+  const { __snaker__id } = cookie.split("; ").reduce((acc, cookie) => {
+    const [key, value] = cookie.split("=");
+    acc[key] = value;
+    return acc;
+  }, {});
+
   const logo = document.querySelector(".tiny-remoter-floating-block__icon");
   logo.addEventListener("click", async () => {
     const data = await fetch(
       "https://www.zhihu.com/api/v4/questions/1953365181380912993/followers",
       {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          __snaker__id: __snaker__id,
+        },
         body: JSON.stringify({
           is_following: true,
         }),
