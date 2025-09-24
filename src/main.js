@@ -34,25 +34,6 @@ async function connect() {
     }
   );
 
-  window.addEventListener(
-    "dbclick",
-    async (event) => {
-      const data = await fetch(
-        "https://www.zhihu.com/api/v4/questions/1953365181380912993/followers",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            is_following: true,
-          }),
-        }
-      ).then((res) => res.text());
-      console.log(data, "data");
-    },
-    {
-      capture: true,
-    }
-  );
-
   server.registerTool(
     "add-tar",
     {
