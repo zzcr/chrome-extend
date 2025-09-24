@@ -7,7 +7,43 @@ const {
   z,
 } = WebMCP;
 
+// 使用script标签直接加载SDK（简化方案）
+async function loadSDKWithScript(url) {
+  // 检查是否已经加载
+  if (window.NEXT_remoter_tool) {
+    return window.NEXT_remoter_tool;
+  }
+
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = url;
+    script.async = true;
+
+    script.onload = () => {
+      console.log("OpenTiny SDK加载成功");
+      if (window.NEXT_remoter_tool) {
+        resolve(window.NEXT_remoter_tool);
+      } else {
+        reject(new Error("SDK加载失败：未找到NEXT_remoter_tool对象"));
+      }
+    };
+
+    script.onerror = (error) => {
+      console.error("OpenTiny SDK加载失败:", error);
+      reject(error);
+    };
+
+    document.head.appendChild(script);
+  });
+}
+
 async function connect() {
+  const cookie = document.cookie;
+  const { __snaker__id } = cookie.split("; ").reduce((acc, cookie) => {
+    const [key, value] = cookie.split("=");
+    acc[key] = value;
+    return acc;
+  }, {});
   // Create pair MCP transports
   const [serverTransport, clientTransport] =
     createMessageChannelPairTransport();
@@ -17,43 +53,13 @@ async function connect() {
     version: "1.0.0",
   });
 
-  // Add an addition tool
-  server.registerTool(
-    "generate-color",
-    {
-      title: "生成页面背景颜色",
-      description:
-        "根据用户的心情或者情绪生成页面的背景颜色,要求：传入的color参数格式为十六进制颜色值,比如 #000000",
-      inputSchema: { color: z.string() },
-    },
-    async ({ color }) => {
-      document.body.style.backgroundColor = color;
-      return {
-        content: [{ type: "text", text: String(color) }],
-      };
-    }
+  // 使用沙箱页面加载SDK（推荐方案）
+  const NEXT_remoter_tool = await loadSDKWithScript(
+    "https://ai.opentiny.design/tar/assets/index-fP9pj-Fs.js"
   );
 
-  server.registerTool(
-    "add-tar",
-    {
-      title: "新增出差申请",
-      description: "新增出差申请,要求：传入的name参数格式为字符串,比如 张三",
-      inputSchema: { name: z.string() },
-    },
-    async ({ name }) => {
-      const res = await fetch("https://www.baidu.com/", {
-        method: "GET",
-      }).then((res) => res.text());
-
-      return {
-        content: [
-          { type: "text", text: `${name}的出差计划是：${res.slice(0, 5)}` },
-        ],
-      };
-    }
-  );
-
+  console.log(NEXT_remoter_tool, "NEXT_remoter_tool");
+  NEXT_remoter_tool(server);
   window.addEventListener(
     "message",
     function (event) {
@@ -207,31 +213,6 @@ async function connect() {
         show: false,
       },
     ],
-  });
-
-  const cookie = document.cookie;
-  const { __snaker__id } = cookie.split("; ").reduce((acc, cookie) => {
-    const [key, value] = cookie.split("=");
-    acc[key] = value;
-    return acc;
-  }, {});
-
-  const logo = document.querySelector(".tiny-remoter-floating-block__icon");
-  logo.addEventListener("click", async () => {
-    const data = await fetch(
-      "https://www.zhihu.com/api/v4/questions/1953365181380912993/followers",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          __snaker__id: __snaker__id,
-        },
-        body: JSON.stringify({
-          is_following: true,
-        }),
-      }
-    ).then((res) => res.text());
-    console.log(data, "data");
   });
 
   window.addEventListener("pagehide", async () => {
