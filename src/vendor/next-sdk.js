@@ -40319,7 +40319,7 @@ async function connect() {
     version: "1.0.0",
   });
 
-  console.log(window.zzz, 222);
+  window.NEXT_remoter_tool(server)
 
   // Create an MCP Client
   const client = new WebMcpClient({

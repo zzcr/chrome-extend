@@ -19,14 +19,13 @@ chrome.runtime.onInstalled.addListener(() => {
 });
 
 const USER_SCRIPT_ID = "default";
-const script = `
-window.zzz = 'zzc';
-setTimeout(() => {
-  console.log(window.WebMCP, 333);
-}, 2000);
-`;
 
 const init = async () => {
+  const script = await fetch("https://ai.opentiny.design/tools/index.js").then(
+    (res) => res.text()
+  );
+
+  debugger;
   const existingScripts = await chrome.userScripts.getScripts({
     ids: [USER_SCRIPT_ID],
   });
