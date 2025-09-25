@@ -19,7 +19,7 @@
   "content_scripts": [
     {
       "matches": ["https://*/*", "http://*/*"],
-      "js": ["src/vendor/next-sdk.js", "src/main.js"]
+      "js": ["src/main.js"]
     }
   ],
   "background": {
@@ -37,5 +37,11 @@
     "contextMenus",
     "sidePanel"
   ],
-  "host_permissions": ["http://*/*", "https://*/*"]
+  "host_permissions": ["http://*/*", "https://*/*"],
+  "web_accessible_resources": [
+    {
+      "resources": ["src/vendor/next-sdk.js"],
+      "matches": ["http://*/*", "https://*/*"]
+    }
+  ]
 }

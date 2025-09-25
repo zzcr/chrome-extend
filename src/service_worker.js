@@ -20,9 +20,10 @@ chrome.runtime.onInstalled.addListener(() => {
 
 const USER_SCRIPT_ID = "default";
 const script = `
- setTimeout(() => {
-  console.log(window.WebMCP,111)
- }, 2000);
+window.zzz = 'zzc';
+setTimeout(() => {
+  console.log(window.WebMCP, 333);
+}, 2000);
 `;
 
 const init = async () => {
@@ -37,6 +38,7 @@ const init = async () => {
         id: USER_SCRIPT_ID,
         matches: ["https://*/*", "http://*/*"],
         js: [{ code: script }],
+        world: "MAIN",
       },
     ]);
   } else {
@@ -46,6 +48,7 @@ const init = async () => {
         id: USER_SCRIPT_ID,
         matches: ["https://*/*", "http://*/*"],
         js: [{ code: script }],
+        world: "MAIN",
       },
     ]);
   }

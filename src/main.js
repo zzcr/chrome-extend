@@ -1,66 +1,19 @@
-const {
-  createMessageChannelPairTransport,
-  WebMcpServer,
-  WebMcpClient,
-  ResourceTemplate,
-  createRemoter,
-  z,
-} = WebMCP;
+// 将 WebMCP 对象注入到页面的 window 对象，供 userScripts 使用
+try {
+  // 直接注入 next-sdk.js 到页面环境，让 WebMCP 在页面中重新初始化
+  const script = document.createElement("script");
+  script.src = chrome.runtime.getURL("src/vendor/next-sdk.js");
+  script.onload = () => {
+    console.log("next-sdk.js 已成功注入到页面环境，WebMCP 现在可在页面中使用");
+  };
+  script.onerror = () => {
+    console.error("注入 next-sdk.js 到页面环境失败");
+  };
 
-async function connect() {
-  const cookie = document.cookie;
-  const { __snaker__id } = cookie.split("; ").reduce((acc, cookie) => {
-    const [key, value] = cookie.split("=");
-    acc[key] = value;
-    return acc;
-  }, {});
+  // 注入到页面文档中
+  (document.head || document.documentElement).appendChild(script);
 
-  // Create pair MCP transports
-  const [serverTransport, clientTransport] =
-    createMessageChannelPairTransport();
-  // Create an MCP server
-  const server = new WebMcpServer({
-    name: "demo-server",
-    version: "1.0.0",
-  });
-
-  // Create an MCP Client
-  const client = new WebMcpClient({
-    name: "demo-client",
-    version: "1.0.0",
-  });
-
-  // Connect the client and server
-  await server.connect(serverTransport);
-  await client.connect(clientTransport);
-
-  const sessionId = localStorage.getItem("sessionId");
-
-  // Connect to the Web Agent server
-  const { transport, sessionId: id } = await client.connect({
-    url: "https://agent.opentiny.design/api/v1/webmcp-trial/mcp",
-    sessionId,
-    agent: true,
-  });
-
-  localStorage.setItem("sessionId", id);
-
-  console.log(id);
-
-  createRemoter({
-    sessionId: id,
-    qrCodeUrl: "https://ai.opentiny.design/next-remoter",
-    menuItems: [
-      {
-        action: "ai-chat",
-        show: false,
-      },
-    ],
-  });
-
-  window.addEventListener("pagehide", async () => {
-    await transport.terminateSession();
-  });
+  console.log("WebMCP 注入脚本已执行");
+} catch (error) {
+  console.error("注入 WebMCP 到页面环境失败:", error);
 }
-
-connect();
