@@ -7,36 +7,6 @@ const {
   z,
 } = WebMCP;
 
-// 使用script标签直接加载SDK（简化方案）
-async function loadSDKWithScript(url) {
-  // 检查是否已经加载
-  if (window.NEXT_remoter_tool) {
-    return window.NEXT_remoter_tool;
-  }
-
-  return new Promise((resolve, reject) => {
-    const script = document.createElement("script");
-    script.src = url;
-    script.async = true;
-
-    script.onload = () => {
-      console.log("OpenTiny SDK加载成功");
-      if (window.NEXT_remoter_tool) {
-        resolve(window.NEXT_remoter_tool);
-      } else {
-        reject(new Error("SDK加载失败：未找到NEXT_remoter_tool对象"));
-      }
-    };
-
-    script.onerror = (error) => {
-      console.error("OpenTiny SDK加载失败:", error);
-      reject(error);
-    };
-
-    document.head.appendChild(script);
-  });
-}
-
 async function connect() {
   const cookie = document.cookie;
   const { __snaker__id } = cookie.split("; ").reduce((acc, cookie) => {
@@ -44,6 +14,7 @@ async function connect() {
     acc[key] = value;
     return acc;
   }, {});
+
   // Create pair MCP transports
   const [serverTransport, clientTransport] =
     createMessageChannelPairTransport();
@@ -51,133 +22,6 @@ async function connect() {
   const server = new WebMcpServer({
     name: "demo-server",
     version: "1.0.0",
-  });
-
-  // 使用沙箱页面加载SDK（推荐方案）
-  const NEXT_remoter_tool = await loadSDKWithScript(
-    "https://ai.opentiny.design/tar/assets/index-fP9pj-Fs.js"
-  );
-
-  console.log(NEXT_remoter_tool, "NEXT_remoter_tool");
-  NEXT_remoter_tool(server);
-  window.addEventListener(
-    "message",
-    function (event) {
-      // 非常重要！验证消息来源，避免处理来自其他脚本的恶意消息
-      // if (event.source != window) return;
-
-      // 只处理我们定义好的消息类型
-      if (event.data.type && event.data.type == "FROM_PAGE") {
-        console.log("从网页收到：", event.data.payload);
-      }
-    },
-    false
-  );
-
-  // 监听来自popup的消息
-  chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    console.log("收到来自popup的消息：", request);
-
-    switch (request.action) {
-      case "changeBackgroundColor":
-        // 改变页面背景颜色
-        document.body.style.backgroundColor = request.color;
-        console.log("页面背景颜色已更改为：", request.color);
-        sendResponse({ success: true, message: "背景颜色已更改" });
-        break;
-
-      case "exportData":
-        // 导出页面数据
-        try {
-          const pageData = {
-            title: document.title,
-            url: window.location.href,
-            text: document.body.innerText.slice(0, 1000), // 限制长度
-            timestamp: new Date().toISOString(),
-          };
-
-          // 创建下载链接
-          const dataStr = JSON.stringify(pageData, null, 2);
-          const dataBlob = new Blob([dataStr], { type: "application/json" });
-          const url = URL.createObjectURL(dataBlob);
-
-          const link = document.createElement("a");
-          link.href = url;
-          link.download = `page-data-${Date.now()}.json`;
-          link.click();
-
-          URL.revokeObjectURL(url);
-          sendResponse({ success: true, message: "数据导出成功" });
-        } catch (error) {
-          console.error("导出数据失败：", error);
-          sendResponse({ success: false, message: "导出数据失败" });
-        }
-        break;
-
-      case "executeScript":
-        // 执行自定义脚本
-        try {
-          // 注意：这里需要谨慎处理，避免安全风险
-          if (request.script && typeof request.script === "string") {
-            // 简单的脚本执行，只允许安全的操作
-            const safeScript = request.script.replace(
-              /eval|Function|setTimeout|setInterval/g,
-              ""
-            );
-            eval(safeScript);
-            sendResponse({ success: true, message: "脚本执行成功" });
-          } else {
-            sendResponse({ success: false, message: "无效的脚本" });
-          }
-        } catch (error) {
-          console.error("执行脚本失败：", error);
-          sendResponse({ success: false, message: "脚本执行失败" });
-        }
-        break;
-
-      case "executeCustomFunction":
-        // 执行自定义功能
-        try {
-          if (request.type && request.code) {
-            switch (request.type) {
-              case "script":
-                // 执行脚本
-                const safeScript = request.code.replace(
-                  /eval|Function|setTimeout|setInterval/g,
-                  ""
-                );
-                eval(safeScript);
-                break;
-              case "style":
-                // 应用样式
-                const style = document.createElement("style");
-                style.textContent = request.code;
-                document.head.appendChild(style);
-                break;
-              case "data":
-                // 数据处理
-                console.log("数据处理:", request.code);
-                break;
-              case "action":
-                // 页面操作
-                console.log("页面操作:", request.code);
-                break;
-            }
-            sendResponse({ success: true, message: "自定义功能执行成功" });
-          } else {
-            sendResponse({ success: false, message: "无效的自定义功能" });
-          }
-        } catch (error) {
-          console.error("执行自定义功能失败：", error);
-          sendResponse({ success: false, message: "执行自定义功能失败" });
-        }
-        break;
-
-      default:
-        sendResponse({ success: false, message: "未知的操作" });
-    }
-
-    return true; // 保持消息通道开放
   });
 
   // Create an MCP Client
@@ -193,20 +37,19 @@ async function connect() {
   const sessionId = localStorage.getItem("sessionId");
 
   // Connect to the Web Agent server
-  const { transport, sessionId: sessionId2 } = await client.connect({
+  const { transport, sessionId: id } = await client.connect({
     url: "https://agent.opentiny.design/api/v1/webmcp-trial/mcp",
     sessionId,
     agent: true,
   });
 
-  localStorage.setItem("sessionId", sessionId2);
+  localStorage.setItem("sessionId", id);
 
-  console.log(sessionId2);
+  console.log(id);
 
   createRemoter({
-    sessionId,
-    qrCodeUrl:
-      "https://ai.opentiny.design/next-remoter?title=遥控器&welcome-title=背景变变变&welcome-desc=请说一句能表达情绪的话，页面会自动更新一个适合的颜色&suggestion=很高兴&suggestion=有点兴奋&suggestion=风和日丽",
+    sessionId: id,
+    qrCodeUrl: "https://ai.opentiny.design/next-remoter",
     menuItems: [
       {
         action: "ai-chat",

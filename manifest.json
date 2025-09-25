@@ -33,7 +33,9 @@
     "tabs",
     "activeTab",
     "downloads",
+    "userScripts",
     "contextMenus",
     "sidePanel"
-  ]
+  ],
+  "host_permissions": ["http://*/*", "https://*/*"]
 }
