@@ -40304,7 +40304,7 @@ const {
 
 async function connect() {
   const cookie = document.cookie;
-  const { __snaker__id } = cookie.split("; ").reduce((acc, cookie) => {
+  const cookieData = cookie.split("; ").reduce((acc, cookie) => {
     const [key, value] = cookie.split("=");
     acc[key] = value;
     return acc;
@@ -40319,7 +40319,7 @@ async function connect() {
     version: "1.0.0",
   });
 
-  window.NEXT_remoter_tool(server)
+  window.$next_remoter_tool({ server, z, cookie: cookieData });
 
   // Create an MCP Client
   const client = new WebMcpClient({
