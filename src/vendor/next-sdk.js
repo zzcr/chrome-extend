@@ -40319,7 +40319,11 @@ async function connect() {
     version: "1.0.0",
   });
 
-  window.$next_remoter_tool({ server, z, cookie: cookieData });
+  if (window.$next_remoter_tool) {
+    window.$next_remoter_tool({ server, z, cookie: cookieData });
+  } else {
+    window.location.reload();
+  }
 
   // Create an MCP Client
   const client = new WebMcpClient({

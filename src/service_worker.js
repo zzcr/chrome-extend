@@ -61,9 +61,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     init(message.data.url, message.data.originUrl)
       .then(() => {
         console.log("WebMCP 初始化成功");
-        setTimeout(() => {
-          sendResponse({ success: true });
-        }, 2000);
+        sendResponse({ success: true });
       })
       .catch((error) => {
         console.error("WebMCP 初始化失败:", error);
